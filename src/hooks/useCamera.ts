@@ -18,12 +18,15 @@ export const useCamera = (): UseCameraReturn => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    let localStream: MediaStream | null = null;
+
     const startCamera = async () => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'environment' },
           audio: false,
         });
+        localStream = mediaStream;
         setStream(mediaStream);
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
@@ -48,8 +51,8 @@ export const useCamera = (): UseCameraReturn => {
     startCamera();
 
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
       }
     };
   }, []);

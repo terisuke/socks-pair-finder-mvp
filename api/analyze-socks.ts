@@ -5,9 +5,21 @@ interface AnalysisRequest {
   base64Image: string;
 }
 
+// Constants
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS headers - allow all origins in development, restrict in production
+  const origin = req.headers.origin ?? '';
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') ?? [];
+
+  if (allowedOrigins.length > 0 && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (process.env.NODE_ENV !== 'production' || allowedOrigins.length === 0) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -27,6 +39,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: '画像データが無効です' });
     }
 
+    // Size validation (base64 is ~33% larger than binary)
+    const estimatedSize = (base64Image.length * 3) / 4;
+    if (estimatedSize > MAX_IMAGE_SIZE) {
+      return res.status(413).json({ error: '画像サイズが大きすぎます（最大10MB）' });
+    }
+
     // Get API key from environment
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -39,12 +57,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Parse image data
     const parts = base64Image.split(',');
+    if (parts.length < 2 || !parts[0] || !parts[1]) {
+      return res.status(400).json({ error: '画像データの形式が無効です' });
+    }
+
     const imageData = parts[1];
-    const mimeMatch = parts[0]?.match(/data:(.+);base64/);
+    const mimeMatch = parts[0].match(/data:(.+);base64/);
     const mimeType = mimeMatch?.[1] ?? 'image/jpeg';
 
-    if (!imageData) {
-      return res.status(400).json({ error: '画像データの形式が無効です' });
+    // MIME type validation
+    if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
+      return res.status(400).json({
+        error: '画像形式が無効です（JPEG、PNG、WebPのみ対応）'
+      });
     }
 
     const systemInstruction = `
