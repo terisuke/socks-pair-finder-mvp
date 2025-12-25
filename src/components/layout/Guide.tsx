@@ -1,23 +1,43 @@
+import React from 'react';
+import { useToggle } from '../../hooks';
 
-import React, { useState } from 'react';
-
-const Guide: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(true);
+export const Guide: React.FC = () => {
+  const { isOpen, toggle } = useToggle(true);
 
   return (
     <div className="bg-blue-50 border border-blue-100 rounded-xl overflow-hidden transition-all duration-300">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
+      <button
+        onClick={toggle}
         className="w-full flex items-center justify-between p-4 text-blue-800 font-semibold"
       >
         <div className="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
           撮影ガイド
         </div>
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="20" height="20" 
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
         >
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -38,5 +58,3 @@ const Guide: React.FC = () => {
     </div>
   );
 };
-
-export default Guide;

@@ -1,7 +1,0 @@
-{
-  "name": "Socks Pair Finder MVP",
-  "description": "An AI-powered application that helps you find matching pairs of socks from a single photo using Gemini 3 Pro Preview.",
-  "requestFramePermissions": [
-    "camera"
-  ]
-}

@@ -1,4 +1,3 @@
-
 export type Confidence = 'high' | 'medium' | 'low';
 
 export interface BoundingBox {
@@ -28,4 +27,16 @@ export interface AppState {
   loading: boolean;
   result: AnalysisResult | null;
   error: string | null;
+}
+
+export interface ScaledBox {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
+
+export interface Dimensions {
+  width: number;
+  height: number;
 }
